@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet id="1" author="jerome">
+        <createTable tableName="profile">
+            <column name="id" type="varchar">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="version" type="bigint"/>
+            <column name="username" type="varchar"/>
+            <column name="fullname" type="varchar"/>
+            <column name="email" type="varchar"/>
+        </createTable>
+        <addUniqueConstraint columnNames="username"
+                             constraintName="const_username"
+                             tableName="profile"/>
+        <createTable tableName="store">
+            <column name="id" type="varchar">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="type" type="varchar"/>
+            <column name="owner" type="varchar"/>
+            <column name="name" type="varchar"/>
+            <column name="creationdate" type="bigint"/>
+            <column name="usage" type="float"/>
+            <column name="status" type="varchar"/>
+            <column name="log" type="clob"/>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>

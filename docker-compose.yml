@@ -1,0 +1,84 @@
+version: '3'
+
+services:
+  consul:
+    image: hashicorp/consul:1.19.x
+    hostname: registry
+    environment:
+      - CONSUL_BIND_INTERFACE=eth0
+    networks:
+      - mbyte
+
+  db:
+    image: postgres
+    hostname: db
+    environment:
+      - POSTGRES_USER=mbyte
+      - POSTGRES_PASSWORD=Tagada54
+      - POSTGRES_DB=mbyte
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./provisioning/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - mbyte
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    hostname: auth
+    command: start --import-realm
+    environment:
+      KC_HOSTNAME_STRICT_BACKCHANNEL: false
+      KC_HTTP_ENABLED: true
+      KC_HOSTNAME_STRICT_HTTPS: false
+      KC_HEALTH_ENABLED: true
+      KC_FEATURES: token-exchange
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: Tagada54
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://db/keycloak
+      KC_DB_USERNAME: mbyte
+      KC_DB_PASSWORD: Tagada54
+      KC_IMPORT: /opt/keycloak/data/import/mbyte-realm.json
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=stack"
+      - "traefik.http.routers.keycloak.rule=Host(`keycloak.localhost`)"
+      - "traefik.http.routers.keycloak.entrypoints=http"
+      - "traefik.http.routers.keycloak.service=keycloak-http"
+      - "traefik.http.services.keycloak-http.loadbalancer.server.port=8080"
+    volumes:
+      - ./provisioning/mbyte-realm.json:/opt/keycloak/data/import/mbyte-realm.json:ro
+    restart: always
+    depends_on:
+      - db
+    networks:
+      - mbyte
+
+  traefik:
+    image: traefik:v3.3
+    hostname: proxy
+    command: --api.insecure=true --providers.docker
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - mbyte
+
+networks:
+  mbyte:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.25.0.0/24
+
+volumes:
+  postgres-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /var/local/mbyte
