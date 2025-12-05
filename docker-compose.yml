@@ -65,6 +65,7 @@ services:
       KC_HOSTNAME: auth.mbyte.fr
       KC_HTTP_PORT: 80
       KC_PROXY: edge
+      KC_HTTP_ENABLED: true
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=mbyte"
