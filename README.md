@@ -60,19 +60,54 @@ The global architecture is composed of :
 mvn clean install  -Dquarkus.container-image.build=true -DskipTests
 ```
 
-### Configuring DNS
+### Configuring domain name resolution
+
+In order to work properly, the application needs to resolve different domain names (those for the different services like registry, auth, manager, store, ...).
+There are many options to have this working :
+- Using /etc/hosts
+- Using dnsmasq
+- Using a local DNS server
+
+For local development, the easiest way is to use /etc/hosts.
 
 #### Using /etc/hosts
 
 Add in /etc/hosts the following lines : 
 
 ```
-127.0.0.1	auth.mbyte.fr www.mbyte.fr registry.mbyte.fr jerome.s.mbyte.fr sheldon.s.mbyte.fr
+127.0.0.1	auth.mbyte.fr www.mbyte.fr proxy.mbyte.fr registry.mbyte.fr sheldon.s.mbyte.fr
 ```
+
+Note: The proxy GUI is accessible through http://proxy.mbyte.fr:8080
 
 ### Running the application
 
-### Using dev mode
+#### Using docker-compose
+
+To start the application, you just have to use the provided docker-compose file.
+
+```bash
+docker compose  up --build
+```
+
+#### Using dev mode
+
+In dev mode, you can run the manager or the store in a local JVM or in your IDE for easier update and debugging.
+
+First stop the container you want to start locally (manager or store)
+
+```bash
+docker compose stop manager
+```
+
+Then start the module in dev mode. In the manager folder, run : 
+```
+export QUARKUS.TEST.CONTINUOUS-TESTING=disabled
+export MANAGER.TOPOLOGY.HOST=172.25.0.10
+export QUARKUS_DATASOURCE_JDBC_URL=jdbc:postgresql://172.25.0.11:5432/manager
+export QUARKUS_HTTP_PORT=8088
+mvn quarkus:dev 
+```
 
 ### Using a postman client
 
@@ -86,14 +121,6 @@ Add in /etc/hosts the following lines :
 - [Spécification JAX-RS 3.1](https://jakarta.ee/specifications/restful-ws/3.1/jakarta-restful-ws-spec-3.1.pdf)
 
 ### A Component
-
-data store
-
-authentication
-
-principles of boxing complexity
-
-loose coupling
 
 ### Persisting information
 
