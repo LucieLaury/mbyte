@@ -60,7 +60,15 @@ The global architecture is composed of :
 mvn clean install  -Dquarkus.container-image.build=true -DskipTests
 ```
 
-### Detailed 
+### Configuring DNS
+
+#### Using /etc/hosts
+
+Add in /etc/hosts the following lines : 
+
+```
+127.0.0.1	auth.mbyte.fr www.mbyte.fr registry.mbyte.fr jerome.s.mbyte.fr sheldon.s.mbyte.fr
+```
 
 ### Running the application
 
