@@ -90,7 +90,7 @@ public class TopologyServiceBean implements TopologyService {
         LOGGER.log(Level.INFO, "Services list: " + services);
         Optional<String> fqdn = services.stream().flatMap(s -> s.getServiceTags().stream().filter(tag -> tag.startsWith("fqdn"))).findFirst();
         if (fqdn.isPresent()) {
-            return fqdn.get();
+            return fqdn.get().substring(5);
         }
         return null;
     }

@@ -80,7 +80,7 @@ public class TopologyServiceBean implements TopologyService {
         } else {
             CatalogClient catalog = consulClient.catalogClient();
             Map<String, List<String>> services =  catalog.getServices().getResponse();
-            List<String> stores = services.keySet().stream().filter(key -> key.startsWith("miage24.store.")).toList();
+            List<String> stores = services.keySet().stream().filter(key -> key.startsWith("mbyte.store.")).toList();
             LOGGER.log(Level.INFO, "Found stores: " + stores);
             return stores.stream().flatMap(name -> consulClient.healthClient().getAllServiceInstances(name).getResponse().stream().map(Neighbour::build)).collect(Collectors.toList());
         }

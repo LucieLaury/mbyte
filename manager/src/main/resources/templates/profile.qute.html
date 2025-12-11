@@ -60,7 +60,7 @@
                             <div class="float-right">
                                 <div class="badge badge-info">free plan</div>
                             </div>
-                            {#if content.store??}
+                            {#if store??}
                                 <h4 class="m-0">{store.name}</h4>
                                 <small class="text-muted">{store.location}</small>
                             {#else}
@@ -68,7 +68,7 @@
                                 <small class="text-muted">no location available</small>
                             {/if}
                         </div>
-                        {#if content.store??}
+                        {#if store??}
                         <div class="card-body">
                             <div class="d-flex align-items-center">
                                 <div class="w-100" data-toggle="tooltip" data-title="Health">
@@ -133,7 +133,7 @@
                         </table>
                         {/if}
                         <div class="card-footer text-center">
-                            {#if content.store??}
+                            {#if store??}
                                 <a href="{store.location}" class="btn btn-secondary" role="button"><em class="fa fa-external-link-alt mr-2"></em> Go to store</a>
                             {#else}
                                 <button class="btn btn-secondary" type="button" data-toggle="modal" data-target="#createStoreModal"><em class="fa fa-plus mr-2"></em>Create your store</button>

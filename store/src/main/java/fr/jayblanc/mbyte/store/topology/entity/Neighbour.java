@@ -52,7 +52,7 @@ public class Neighbour {
     }
 
     public static Neighbour build(ServiceHealth health) {
-        Neighbour neighbour = new Neighbour(health.getService().getId(), health.getService().getService().substring("miage24.store.".length()), health.getService().getAddress() + ":" + health.getService().getPort(), "");
+        Neighbour neighbour = new Neighbour(health.getService().getId(), health.getService().getService().substring("mbyte.store.".length()), health.getService().getAddress() + ":" + health.getService().getPort(), "");
         neighbour.setFqdn(health.getService().getTags().stream().filter(t -> t.startsWith("fqdn.")).map(t -> t.substring(5)).findFirst().orElse(""));
         return neighbour;
     }

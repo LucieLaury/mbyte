@@ -92,11 +92,11 @@ public class DockerStoreProvider implements StoreProvider {
         Optional<Network> network = client.listNetworksCmd().withNameFilter(NETWORK_NAME).exec().stream().findFirst();
         if (network.isEmpty()) {
             LOGGER.log(Level.SEVERE, NETWORK_NAME + " network not found, cannot create store app");
-            creationLog.append("[Step 1/9] -FAILED- ").append(NETWORK_NAME).append(" network not found, cannot create store app");
+            creationLog.append("[Step 1/7] -FAILED- ").append(NETWORK_NAME).append(" network not found, cannot create store app");
             return creationLog.toString();
         }
         LOGGER.log(Level.INFO, "Found existing network, name: " + network.get().getName() + ", id:" + network.get().getId());
-        creationLog.append("[Step 1/9] -COMPLETED- ").append("Found existing network, name:").append(network.get().getName()).append(", id:").append(network.get().getId()).append("\n");
+        creationLog.append("[Step 1/7] -COMPLETED- ").append("Found existing network, name:").append(network.get().getName()).append(", id:").append(network.get().getId()).append("\n");
 
         // Step 2: create db volume 'mbyte.UUID.db.volume'
         String dbVolumeName = INSTANCE_NAME.concat(id).concat(DB_SUFFIX).concat(VOLUME_SUFFIX);
@@ -105,10 +105,10 @@ public class DockerStoreProvider implements StoreProvider {
         try {
             Files.createDirectories(dbLocalVolumePath);
             LOGGER.log(Level.INFO, "Created directories for db volume: " + dbLocalVolumePath);
-            creationLog.append("[Step 2/9] -PROGRESS- ").append("Created directories for db volume: ").append(dbLocalVolumePath).append("\n");
+            creationLog.append("[Step 2/7] -PROGRESS- ").append("Created directories for db volume: ").append(dbLocalVolumePath).append("\n");
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Failed to create directories for store db volume: " + dbLocalVolumePath, e);
-            creationLog.append("[Step 2/9] -FAILED- ").append("Failed to create directories for store db volume: ").append(dbLocalVolumePath).append("\n");
+            creationLog.append("[Step 2/7] -FAILED- ").append("Failed to create directories for store db volume: ").append(dbLocalVolumePath).append("\n");
             return creationLog.toString();
         }
         Optional<InspectVolumeResponse> dbVolume = client.listVolumesCmd().exec().getVolumes().stream()
@@ -121,10 +121,10 @@ public class DockerStoreProvider implements StoreProvider {
                 .withDriverOpts(Map.of("type", "none", "o", "bind","device", dbHostVolumePath.toString()))
                 .exec();
             LOGGER.log(Level.INFO, "Database volume created: " + response.getName());
-            creationLog.append("[Step 2/9] -COMPLETED- ").append("Database volume created: ").append(response.getName()).append("\n");
+            creationLog.append("[Step 2/7] -COMPLETED- ").append("Database volume created: ").append(response.getName()).append("\n");
         } else {
             LOGGER.log(Level.INFO, "Found existing database volume: " + dbVolume.get().getName());
-            creationLog.append("[Step 2/9] -COMPLETED- ").append("Found existing database volume: ").append(dbVolume.get().getName()).append("\n");
+            creationLog.append("[Step 2/7] -COMPLETED- ").append("Found existing database volume: ").append(dbVolume.get().getName()).append("\n");
         }
 
         // Step 3: create db container 'mbyte.UUID.db.cont'
@@ -139,32 +139,28 @@ public class DockerStoreProvider implements StoreProvider {
                 "POSTGRES_DB=store"
             )
             .withHostConfig(HostConfig.newHostConfig()
+                .withNetworkMode(NETWORK_NAME)
                 .withBinds(new Bind(dbVolumeName, new Volume("/var/lib/postgresql/data"))))
             .exec();
         LOGGER.log(Level.INFO, "Database container created for store: " + dbContainer.getId());
-        creationLog.append("[Step 3/9] -COMPLETED- ").append("Database container created for store: ").append(dbContainer.getId()).append("\n");
+        creationLog.append("[Step 3/7] -COMPLETED- ").append("Database container created for store: ").append(dbContainer.getId()).append("\n");
 
-        // Step 4: connect db container to network
-        client.connectToNetworkCmd().withContainerId(dbContainer.getId()).withNetworkId(network.get().getId()).exec();
-        LOGGER.log(Level.INFO, "Database container connected to " + NETWORK_NAME);
-        creationLog.append("[Step 4/9] -COMPLETED- ").append("Database container connected to network: ").append(NETWORK_NAME).append("\n");
-
-        // Step 5: start db container
+        // Step 4: start db container
         client.startContainerCmd(dbContainer.getId()).exec();
         LOGGER.log(Level.INFO, "Database container started for store: " + dbContainer.getId());
-        creationLog.append("[Step 5/9] -COMPLETED- ").append("Database container started for store: ").append(dbContainer.getId()).append("\n");
+        creationLog.append("[Step 4/7] -COMPLETED- ").append("Database container started for store: ").append(dbContainer.getId()).append("\n");
 
-        // Step 6: create data volume 'mbyte.UUID.data.volume'
+        // Step 5: create data volume 'mbyte.UUID.data.volume'
         String dataVolumeName = INSTANCE_NAME.concat(id).concat(DATA_SUFFIX).concat(VOLUME_SUFFIX);
         Path dataLocalVolumePath =  Paths.get(config.workdir().local(), id, STORES_DATA_PATH_SEGMENT);
         Path dataHostVolumePath =  Paths.get(config.workdir().host(), id, STORES_DATA_PATH_SEGMENT);
         try {
             Files.createDirectories(dataLocalVolumePath);
             LOGGER.log(Level.INFO, "Created directories for data volume: " + dataLocalVolumePath);
-            creationLog.append("[Step 6/9] -PROGRESS- ").append("Created directories for data volume: ").append(dataLocalVolumePath).append("\n");
+            creationLog.append("[Step 5/7] -PROGRESS- ").append("Created directories for data volume: ").append(dataLocalVolumePath).append("\n");
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Failed to create directories for store data volume: " + dataLocalVolumePath, e);
-            creationLog.append("[Step 6/9] -FAILED- ").append("Failed to create directories for store data volume: ").append(dataLocalVolumePath).append("\n");
+            creationLog.append("[Step 5/7] -FAILED- ").append("Failed to create directories for store data volume: ").append(dataLocalVolumePath).append("\n");
             return creationLog.toString();
         }
         Optional<InspectVolumeResponse> dataVolume = client.listVolumesCmd().exec().getVolumes().stream()
@@ -177,13 +173,13 @@ public class DockerStoreProvider implements StoreProvider {
                     .withDriverOpts(Map.of("type", "none", "o", "bind","device", dataHostVolumePath.toString()))
                     .exec();
             LOGGER.log(Level.INFO, "Data volume created: " + response.getName());
-            creationLog.append("[Step 6/9] -COMPLETED- ").append("Data volume created: ").append(response.getName()).append("\n");
+            creationLog.append("[Step 5/7] -COMPLETED- ").append("Data volume created: ").append(response.getName()).append("\n");
         } else {
             LOGGER.log(Level.INFO, "Found existing data volume: " + dataVolume.get().getName());
-            creationLog.append("[Step 6/9] -COMPLETED- ").append("Found existing data volume: ").append(dataVolume.get().getName()).append("\n");
+            creationLog.append("[Step 5/7] -COMPLETED- ").append("Found existing data volume: ").append(dataVolume.get().getName()).append("\n");
         }
 
-        // Step 7: create store container 'mbyte.UUID.store.cont'
+        // Step 6: create store container 'mbyte.UUID.store.cont'
         String storeContainerName = INSTANCE_NAME.concat(id).concat(STORE_SUFFIX).concat(CONTAINER_SUFFIX);
         CreateContainerResponse storeContainer = client.createContainerCmd(config.image())
                 .withName(storeContainerName)
@@ -208,20 +204,16 @@ public class DockerStoreProvider implements StoreProvider {
                         "traefik.http.services." + id + "-http.loadbalancer.server.port","8080"
                 ))
                 .withHostConfig(HostConfig.newHostConfig()
+                        .withNetworkMode(NETWORK_NAME)
                         .withBinds(new Bind(dataVolumeName, new Volume("/home/jboss"))))
                 .exec();
         LOGGER.log(Level.INFO, "Store container created: " + storeContainer.getId());
-        creationLog.append("[Step 7/9] -COMPLETED- ").append("Store container created: ").append(storeContainer.getId()).append("\n");
+        creationLog.append("[Step 6/7] -COMPLETED- ").append("Store container created: ").append(storeContainer.getId()).append("\n");
 
-        // Step 8: connect store container to the network
-        client.connectToNetworkCmd().withContainerId(storeContainer.getId()).withNetworkId(network.get().getId()).exec();
-        LOGGER.log(Level.INFO, "Store container connected to " + NETWORK_NAME);
-        creationLog.append("[Step 8/9] -COMPLETED- ").append("Store container connected to network: ").append(NETWORK_NAME).append("\n");
-
-        // Step 9: start store container
+        // Step 7: start store container
         client.startContainerCmd(storeContainer.getId()).exec();
         LOGGER.log(Level.INFO, "Store container started for store: " + storeContainer.getId());
-        creationLog.append("[Step 9/9] -COMPLETED- ").append("Store container started for id: ").append(storeContainer.getId()).append("\n");
+        creationLog.append("[Step 7/7] -COMPLETED- ").append("Store container started for id: ").append(storeContainer.getId()).append("\n");
 
         return id;
     }
