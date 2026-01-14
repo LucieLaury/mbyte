@@ -25,15 +25,12 @@ import fr.jayblanc.mbyte.manager.core.entity.Store;
 import fr.jayblanc.mbyte.manager.exception.AccessDeniedException;
 import fr.jayblanc.mbyte.manager.process.ProcessEngine;
 import fr.jayblanc.mbyte.manager.process.entity.Process;
-import io.quarkus.qute.Template;
-import io.quarkus.qute.TemplateInstance;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.*;
 
 import java.net.URI;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -45,7 +42,6 @@ public class ProfilesResource {
     @Inject AuthenticationService auth;
     @Inject CoreService core;
     @Inject ProcessEngine engine;
-    @Inject Template profile;
 
     @GET
     @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON})
@@ -63,21 +59,6 @@ public class ProfilesResource {
         LOGGER.log(Level.INFO, "GET /api/profiles/" + id);
         Profile profile = auth.getConnectedProfile();
         return Response.ok(profile).build();
-    }
-
-    @GET
-    @Path("{id}")
-    @Produces(MediaType.TEXT_HTML)
-    public TemplateInstance profileView(@PathParam("id") String id) {
-        LOGGER.log(Level.INFO, "GET /api/profiles/" + id + " (html)");
-        TemplateInstance view = profile.data("profile", auth.getConnectedProfile());
-        try {
-            String sid = core.listConnectedUserStores().getFirst();
-            view = view.data("store", core.getStore(sid));
-        } catch (NoSuchElementException | StoreNotFoundException | CoreServiceException | AccessDeniedException e ) {
-            //
-        }
-        return view;
     }
 
     @GET
