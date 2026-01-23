@@ -21,9 +21,4 @@ public class ApplicationNotFoundException extends Exception {
     public ApplicationNotFoundException(String message) {
         super(message);
     }
-
-    public ApplicationNotFoundException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
 }

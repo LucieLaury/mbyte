@@ -17,14 +17,9 @@
 package fr.jayblanc.mbyte.manager.process.entity;
 
 import fr.jayblanc.mbyte.manager.process.ProcessDefinition;
-import fr.jayblanc.mbyte.manager.process.Task;
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -174,7 +169,7 @@ public class Process {
 
     public String findFirstTask() {
         List<String> ordered = getOrderedTasks();
-        return ordered.isEmpty() ? null : ordered.get(0);
+        return ordered.isEmpty() ? null : ordered.getFirst();
     }
 
     public String findNextTask(String taskId) {

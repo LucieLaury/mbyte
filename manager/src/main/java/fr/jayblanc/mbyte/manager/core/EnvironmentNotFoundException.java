@@ -22,8 +22,4 @@ public class EnvironmentNotFoundException extends Exception {
         super(message);
     }
 
-    public EnvironmentNotFoundException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
 }

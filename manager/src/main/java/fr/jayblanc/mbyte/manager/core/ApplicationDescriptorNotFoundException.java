@@ -24,7 +24,4 @@ public class ApplicationDescriptorNotFoundException extends Exception {
         super(message);
     }
 
-    public ApplicationDescriptorNotFoundException(String message, Throwable cause) {
-        super(message, cause);
-    }
 }
