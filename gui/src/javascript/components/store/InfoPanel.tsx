@@ -13,6 +13,8 @@ export function InfoPanel({ selected }: InfoPanelProps) {
     return `${Math.round(size / (1024 * 1024))} MB`
   }
 
+  const truncateName = (name: string) => name.length > 40 ? name.substring(0, 37) + '...' : name
+
   return (
     <div style={{ width: 360, borderLeft: '1px solid rgba(0,0,0,0.08)', overflow: 'auto' }}>
       <div className="p-3">
@@ -21,10 +23,20 @@ export function InfoPanel({ selected }: InfoPanelProps) {
         {selected && (
           <CCard>
             <CCardBody>
-              <div className="mb-2"><strong>{selected.name}</strong></div>
-              <div className="text-muted small">Type: {selected.isFolder ? 'folder' : 'file'}</div>
-              <div className="text-muted small">Size: {formatSize(selected.size)}</div>
-              <div className="text-muted small">Modified: {selected.modificationTs ? new Date(selected.modificationTs).toLocaleString() : ''}</div>
+              {selected.isFolder ? (
+                <>
+                  <div className="mb-2"><strong>Folder name: <span title={selected.name}>{truncateName(selected.name)}</span></strong></div>
+                  <div className="text-muted small">Type: folder</div>
+                  {/* Future: size calculation */}
+                </>
+              ) : (
+                <>
+                  <div className="mb-2"><strong title={selected.name}>{truncateName(selected.name)}</strong></div>
+                  <div className="text-muted small">Type: file</div>
+                  <div className="text-muted small">Size: {formatSize(selected.size)}</div>
+                  <div className="text-muted small">Modified: {selected.modificationTs ? new Date(selected.modificationTs).toLocaleString() : ''}</div>
+                </>
+              )}
             </CCardBody>
           </CCard>
         )}

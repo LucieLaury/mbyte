@@ -252,7 +252,7 @@ export function StorePage() {
             </div>
           )}
 
-          <BrowserArea files={nodes} viewMode={viewMode} onSelect={(n) => handleView(n)} onOpenFolder={(id) => handleOpenFolder(id)} onAction={(a, f) => handleAction(a, f)} />
+          <BrowserArea files={nodes} viewMode={viewMode} onSelect={(n) => handleView(n)} onAction={(a, f) => handleAction(a, f)} showParent={currentPath.length > 1} onGoToParent={() => handleOpenFolder(currentPath[currentPath.length - 2].id)} />
         </div>
 
         {detailVisible && <InfoPanel selected={selected ?? null} />}
