@@ -8,12 +8,16 @@ import {NotFoundPage} from './pages/NotFoundPage'
 import {StorePage} from './pages/StorePage'
 import {Header, SideBar} from './components'
 import {CToast, CToastBody, CToastHeader,} from '@coreui/react'
+import {useWebSocket} from './utils/useWebSocket'
 
 export default function App() {
   const { t } = useTranslation()
   const [sidebarNarrow, setSidebarNarrow] = useState(false)
   const [toastMessage, setToastMessage] = useState('')
   const [showToast, setShowToast] = useState(false)
+
+  // Connect to WebSocket for notifications
+  useWebSocket('/notifications')
 
   const handleNotify = (message: string) => {
     setToastMessage(message)

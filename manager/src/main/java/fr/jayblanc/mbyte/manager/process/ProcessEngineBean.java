@@ -81,7 +81,7 @@ public class ProcessEngineBean implements ProcessEngine, ProcessEngineAdmin {
     @Override
     @Transactional(Transactional.TxType.REQUIRED)
     public List<Process> findRunningProcessesForApp(String appId) {
-        LOGGER.log(Level.INFO,"Finding running processes for application: {0}", appId);
+        LOGGER.log(Level.INFO,"Searching running processes for application: {0}", appId);
         return em.createNamedQuery("Process.findByAppAndStatus", Process.class)
                 .setParameter("appId", appId)
                 .setParameter("status", ProcessStatus.getRunningProcessStatuses()).getResultList();
@@ -90,7 +90,7 @@ public class ProcessEngineBean implements ProcessEngine, ProcessEngineAdmin {
     @Override
     @Transactional(Transactional.TxType.REQUIRED)
     public List<Process> findAllProcessesForApp(String appId) {
-        LOGGER.log(Level.INFO, "Finding all processes for application: {0}", appId);
+        LOGGER.log(Level.INFO, "Searching all processes for application: {0}", appId);
         return em.createNamedQuery("Process.findByApp", Process.class).setParameter("appId", appId).getResultList();
     }
 
