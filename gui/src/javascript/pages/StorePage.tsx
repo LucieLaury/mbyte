@@ -57,8 +57,13 @@ export function StorePage() {
       const root = await storeApiRef.current.getRoot()
       const coll = await storeApiRef.current.listChildren(root.id, 200, 0)
       if (cancelled) return
-      if (JSON.stringify(coll.values.map(n => n.id)) !== JSON.stringify(nodes.map(n => n.id))) {
-        setNodes(coll.values)
+      const sortedValues = coll.values.sort((a, b) => {
+        if (a.isFolder && !b.isFolder) return -1
+        if (!a.isFolder && b.isFolder) return 1
+        return a.name.localeCompare(b.name)
+      })
+      if (JSON.stringify(sortedValues.map(n => n.id)) !== JSON.stringify(nodes.map(n => n.id))) {
+        setNodes(sortedValues)
       }
       if (setBreadcrumb) {
         const newPath = [{ id: undefined, name: '/' }]
@@ -82,8 +87,13 @@ export function StorePage() {
           if (node.isFolder) {
             const coll = await storeApiRef.current.listChildren(node.id, 200, 0)
             if (cancelled) return
-            if (JSON.stringify(coll.values.map(n => n.id)) !== JSON.stringify(nodes.map(n => n.id))) {
-              setNodes(coll.values)
+            const sortedValues = coll.values.sort((a, b) => {
+              if (a.isFolder && !b.isFolder) return -1
+              if (!a.isFolder && b.isFolder) return 1
+              return a.name.localeCompare(b.name)
+            })
+            if (JSON.stringify(sortedValues.map(n => n.id)) !== JSON.stringify(nodes.map(n => n.id))) {
+              setNodes(sortedValues)
             }
             try {
               const path = await storeApiRef.current.getPath(node.id)
@@ -107,8 +117,13 @@ export function StorePage() {
               const parentId = parentPath.length > 0 ? parentPath.at(-1)!.id : (await storeApiRef.current.getRoot()).id
               const coll = await storeApiRef.current.listChildren(parentId, 200, 0)
               if (cancelled) return
-              if (JSON.stringify(coll.values.map(n => n.id)) !== JSON.stringify(nodes.map(n => n.id))) {
-                setNodes(coll.values)
+              const sortedValues = coll.values.sort((a, b) => {
+                if (a.isFolder && !b.isFolder) return -1
+                if (!a.isFolder && b.isFolder) return 1
+                return a.name.localeCompare(b.name)
+              })
+              if (JSON.stringify(sortedValues.map(n => n.id)) !== JSON.stringify(nodes.map(n => n.id))) {
+                setNodes(sortedValues)
               }
               const newPath = [{ id: undefined, name: '/' }, ...parentPath.slice(1).map(p => ({ id: p.id, name: p.name }))]
               if (JSON.stringify(newPath) !== JSON.stringify(currentPath)) setCurrentPath(newPath)

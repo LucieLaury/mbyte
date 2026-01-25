@@ -1,4 +1,5 @@
 import { CCard, CCardBody } from '@coreui/react'
+import { useEffect, useState } from 'react'
 import Node from '../../api/entities/Node'
 
 type InfoPanelProps = Readonly<{
@@ -6,6 +7,19 @@ type InfoPanelProps = Readonly<{
 }>
 
 export function InfoPanel({ selected }: InfoPanelProps) {
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth)
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth)
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => {
+      window.removeEventListener('resize', handleResize)
+    }
+  }, [])
+
   const formatSize = (size?: number) => {
     if (!size) return ''
     if (size < 1024) return `${size} B`
@@ -13,7 +27,8 @@ export function InfoPanel({ selected }: InfoPanelProps) {
     return `${Math.round(size / (1024 * 1024))} MB`
   }
 
-  const truncateName = (name: string) => name.length > 40 ? name.substring(0, 37) + '...' : name
+  const maxLength = windowWidth < 768 ? 20 : 40
+  const truncateName = (name: string) => name.length > maxLength ? name.substring(0, maxLength - 3) + '...' : name
 
   return (
     <div style={{ width: 360, borderLeft: '1px solid rgba(0,0,0,0.08)', overflow: 'auto' }}>
@@ -27,12 +42,14 @@ export function InfoPanel({ selected }: InfoPanelProps) {
                 <>
                   <div className="mb-2"><strong>Folder name: <span title={selected.name}>{truncateName(selected.name)}</span></strong></div>
                   <div className="text-muted small">Type: folder</div>
+                  <div className="text-muted small">Modified: {selected.modificationTs ? new Date(selected.modificationTs).toLocaleString() : ''}</div>
                   {/* Future: size calculation */}
                 </>
               ) : (
                 <>
                   <div className="mb-2"><strong title={selected.name}>{truncateName(selected.name)}</strong></div>
                   <div className="text-muted small">Type: file</div>
+                  <div className="text-muted small">MIME Type: {selected.mimetype || 'Unknown'}</div>
                   <div className="text-muted small">Size: {formatSize(selected.size)}</div>
                   <div className="text-muted small">Modified: {selected.modificationTs ? new Date(selected.modificationTs).toLocaleString() : ''}</div>
                 </>

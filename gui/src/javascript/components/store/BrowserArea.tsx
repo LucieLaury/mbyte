@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { CTable, CTableHead, CTableRow, CTableHeaderCell, CTableBody, CTableDataCell, CButton } from '@coreui/react'
 import { CIcon } from '@coreui/icons-react'
 import { cilFolderOpen, cilFile, cilCloudDownload, cilInfo } from '@coreui/icons'
@@ -15,7 +16,16 @@ type BrowserAreaProps = Readonly<{
 
 export function BrowserArea({ files, viewMode, onSelect, onAction, showParent, onGoToParent }: BrowserAreaProps) {
   const { t } = useTranslation()
-  const truncateName = (name: string) => name.length > 40 ? name.substring(0, 37) + '...' : name
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth)
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth)
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  const maxLength = windowWidth < 768 ? 20 : 40
+  const truncateName = (name: string) => name.length > maxLength ? name.substring(0, maxLength - 3) + '...' : name
   // fill all available space, no padding
   return (
     <div style={{ height: '100%', width: '100%', overflow: 'auto' }}>
@@ -64,7 +74,7 @@ export function BrowserArea({ files, viewMode, onSelect, onAction, showParent, o
                   {f.isFolder ? <strong title={f.name}>{truncateName(f.name)}</strong> : <span title={f.name}>{truncateName(f.name)}</span>}
                 </CTableDataCell>
                 <CTableDataCell style={{ background: (idx + (showParent ? 1 : 0)) % 2 === 0 ? '#fafafa' : '#f5f6f7', padding: '12px 16px', verticalAlign: 'middle', lineHeight: '20px', minHeight: 56, boxSizing: 'border-box' }} className="text-end">{f.size ? `${Math.round(f.size / 1024)} KB` : ''}</CTableDataCell>
-                <CTableDataCell style={{ background: (idx + (showParent ? 1 : 0)) % 2 === 0 ? '#fafafa' : '#f5f6f7', padding: '12px 16px', verticalAlign: 'middle', lineHeight: '20px', minHeight: 56, boxSizing: 'border-box' }} className="text-end">{f.isFolder ? t('store.folder') : t('store.file')}</CTableDataCell>
+                <CTableDataCell style={{ background: (idx + (showParent ? 1 : 0)) % 2 === 0 ? '#fafafa' : '#f5f6f7', padding: '12px 16px', verticalAlign: 'middle', lineHeight: '20px', minHeight: 56, boxSizing: 'border-box' }} className="text-end">{f.isFolder ? 'Folder' : (f.mimetype || 'Unknown')}</CTableDataCell>
                 <CTableDataCell style={{ background: (idx + (showParent ? 1 : 0)) % 2 === 0 ? '#fafafa' : '#f5f6f7', padding: '12px 16px', verticalAlign: 'middle', lineHeight: '20px', minHeight: 56, boxSizing: 'border-box' }} className="text-end">{f.creationTs ? new Date(f.creationTs).toLocaleDateString() : ''}</CTableDataCell>
                 <CTableDataCell style={{ background: (idx + (showParent ? 1 : 0)) % 2 === 0 ? '#fafafa' : '#f5f6f7', padding: '12px 16px', verticalAlign: 'middle', lineHeight: '20px', minHeight: 56, boxSizing: 'border-box' }} className="text-end">{f.modificationTs ? new Date(f.modificationTs).toLocaleDateString() : ''}</CTableDataCell>
                 <CTableDataCell style={{ background: (idx + (showParent ? 1 : 0)) % 2 === 0 ? '#fafafa' : '#f5f6f7', width: '10%', padding: '12px 16px', verticalAlign: 'middle', lineHeight: '20px', minHeight: 56, boxSizing: 'border-box', whiteSpace: 'nowrap' }} className="text-end">
@@ -117,7 +127,7 @@ export function BrowserArea({ files, viewMode, onSelect, onAction, showParent, o
                       <CIcon icon={f.isFolder ? cilFolderOpen : cilFile} />
                       <div>
                         <div className="fw-semibold" title={f.name}>{truncateName(f.name)}</div>
-                        <div className="text-muted small">{f.isFolder ? t('store.folder') : t('store.file')} • {f.modificationTs ? new Date(f.modificationTs).toLocaleDateString() : ''}</div>
+                        <div className="text-muted small">{f.isFolder ? 'Folder' : (f.mimetype || 'Unknown')} • {f.modificationTs ? new Date(f.modificationTs).toLocaleDateString() : ''}</div>
                       </div>
                     </div>
                   </div>
