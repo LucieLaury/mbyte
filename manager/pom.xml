@@ -8,7 +8,7 @@
     </parent>
     <artifactId>manager</artifactId>
     <name>The M[iage].byte project :: Manager</name>
-    <version>25.1-SNAPSHOT</version>
+    <version>26.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <properties>

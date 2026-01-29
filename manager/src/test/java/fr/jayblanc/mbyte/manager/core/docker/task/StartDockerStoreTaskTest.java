@@ -61,7 +61,7 @@ public class StartDockerStoreTaskTest {
     private static final String DB_CONTAINER_NAME_PREFIX = "test_start_docker_store_db_container_";
     private static final String STORE_VOLUME_NAME_PREFIX = "test_start_docker_store_store_volume_";
     private static final String STORE_CONTAINER_NAME_PREFIX = "test_start_docker_store_store_container_";
-    private static final String STORE_IMAGE = "jerome/store:25.1-SNAPSHOT";
+    private static final String STORE_IMAGE = "jerome/store:26.1";
 
     private static String networkName;
     private static String dbVolumeName;
