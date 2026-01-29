@@ -40,6 +40,10 @@ export function useWebSocket(path: string) {
       ws.current.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data)
+          if (data.type === 'app.created') {
+            // Dispatch specific event for app creation
+            globalThis.dispatchEvent(new CustomEvent('app-created'))
+          }
           // Dispatch toast event
           globalThis.dispatchEvent(new CustomEvent('mbyte-toast', { detail: { message: data.message || event.data } }))
         } catch (e) {
@@ -66,5 +70,5 @@ export function useWebSocket(path: string) {
     }
   }, [path, tokenProvider])
 
-  return ws.current
+  return null
 }

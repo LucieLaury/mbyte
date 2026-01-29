@@ -26,7 +26,6 @@ export function DashboardPage({ onNotify }: DashboardPageProps) {
       setCreationBusy(true)
       const name = profile.username ?? profile.id
       await managerApi.createApp('DOCKER_STORE', name)
-      reloadStatus()
       onNotify(t('dashboard.storeCreated'))
     } catch (error) {
       console.error('Failed to create store:', error)

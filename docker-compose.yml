@@ -99,7 +99,7 @@ services:
           - auth.mbyte.fr
 
   manager:
-    image: mbyte/manager:26.1
+    image: mbyte/manager:26.2-SNAPSHOT
     hostname: manager
     container_name: mbyte.manager
     depends_on:
@@ -132,7 +132,7 @@ services:
       - MANAGER_INSTANCE=mbyte.fr
 
   gui:
-    image: mbyte/gui:26.1
+    image: mbyte/gui:26.2-SNAPSHOT
     hostname: www
     container_name: mbyte.gui
     depends_on:

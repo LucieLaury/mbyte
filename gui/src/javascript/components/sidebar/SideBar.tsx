@@ -1,13 +1,23 @@
 import { CSidebar, CSidebarHeader, CSidebarNav } from '@coreui/react'
 import { DashboardIcon, SidebarBrand, SidebarNavItem, SidebarProfile, StoreIcon } from '../index'
 import { useManagerStatus } from '../../auth/useManagerStatus'
+import { useEffect } from 'react'
 
 export type SideBarProps = {
   narrow: boolean
 }
 
 export function SideBar({ narrow }: SideBarProps) {
-  const { hasStore } = useManagerStatus()
+  const { hasStore, reload: reloadStatus } = useManagerStatus()
+
+  // Listen for app creation event from WebSocket
+  useEffect(() => {
+    const handleAppCreated = () => {
+      reloadStatus()
+    }
+    globalThis.addEventListener('app-created', handleAppCreated)
+    return () => globalThis.removeEventListener('app-created', handleAppCreated)
+  }, [reloadStatus])
 
   return (
     <CSidebar narrow={narrow} className="mbyte-sidebar">
