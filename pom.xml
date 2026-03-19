@@ -38,5 +38,6 @@
         <module>manager</module>
         <module>gui</module>
         <module>keycloak-theme</module>
+        <module>Bot</module>
     </modules>
 </project>

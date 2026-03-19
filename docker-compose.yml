@@ -71,7 +71,7 @@ services:
       KC_DB_PASSWORD: password
       KC_HOSTNAME: auth.mbyte.fr
       KC_HOSTNAME_PROTOCOL: https
-      KC_HTTP_ENABLED: true
+      KC_HTTP_ENABLED: "true"
       KC_HTTP_PORT: 80
       KC_PROXY_HEADERS: xforwarded
       KC_PROXY: edge
@@ -152,6 +152,22 @@ services:
       - "traefik.http.routers.gui-http.middlewares=redirect-to-https"
       - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
       - "traefik.http.services.gui.loadbalancer.server.port=80"
+
+  bot:
+    build:
+      context: ./Bot
+      dockerfile: Dockerfile
+    hostname: bot
+    container_name: mbyte.bot
+    env_file:
+      - ./Bot/.env
+    networks:
+      mbyte.fr:
+        ipv4_address: 172.25.0.15
+    restart: unless-stopped
+    extra_hosts:
+      - "auth.mbyte.fr:172.25.0.2"    # Traefik, comme le manager
+      # - "lucie2.s.mbyte.fr:172.25.0.9" # Pour l'upload aussi
 
 networks:
   mbyte.fr:
